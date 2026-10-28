@@ -1,0 +1,149 @@
+@import '@fontsource/cormorant-garamond/300.css';
+@import '@fontsource/cormorant-garamond/400.css';
+@import '@fontsource/cormorant-garamond/500.css';
+@import '@fontsource/cormorant-garamond/300-italic.css';
+@import '@fontsource/cormorant-garamond/400-italic.css';
+@import '@fontsource-variable/manrope/index.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Layout: grade editorial assimétrica de 12 colunas, margens generosas, linhas finas de 1px.
+   O site assume um único visual (mineral claro + seções escuras) e define todas as cores explicitamente. */
+:root {
+  --c-mineral: #eae7e0;
+  --c-ink: #171816;
+  --c-concrete: #777670;
+  --c-sand: #c6bba9;
+  --c-olive: #454d43;
+  --c-paper: #f7f6f2;
+  --c-line: rgba(23, 24, 22, 0.16);
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --pad-x: clamp(20px, 4.2vw, 72px);
+  --ease-nord: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --header-h: 76px;
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--c-mineral);
+  }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  body {
+    background: var(--c-mineral);
+    color: var(--c-ink);
+    font-family: theme('fontFamily.sans');
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--c-ink); color: var(--c-paper); }
+  img { max-width: 100%; }
+  h1, h2, h3 { text-wrap: balance; }
+  :focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
+  button { cursor: pointer; }
+}
+
+@layer components {
+  .px-site {
+    padding-left: max(var(--pad-x), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--pad-x), env(safe-area-inset-right, 0px));
+  }
+  .label {
+    font-family: theme('fontFamily.sans');
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+  .display {
+    font-family: theme('fontFamily.serif');
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+  }
+  .h-mega { font-size: clamp(3.1rem, 11.2vw, 13.5rem); }
+  .h-xl { font-size: clamp(2.6rem, 7.4vw, 8.5rem); }
+  .h-lg { font-size: clamp(2.2rem, 5vw, 5.4rem); }
+  .h-md { font-size: clamp(1.75rem, 3vw, 3.1rem); }
+  .lead { font-size: clamp(1.05rem, 1.25vw, 1.3rem); line-height: 1.55; }
+  .rule { height: 1px; background: currentColor; opacity: 0.18; transform-origin: left center; }
+  .line-mask { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+  .line-mask > span { display: inline-block; will-change: transform; }
+
+  .link-u { position: relative; display: inline-block; }
+  .link-u::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: currentColor;
+    transform: scaleX(0); transform-origin: right; transition: transform 0.6s var(--ease-out);
+  }
+  .link-u:hover::after, .link-u:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+
+  .btn {
+    position: relative; display: inline-flex; align-items: center; gap: 0.9rem;
+    min-height: 52px; padding: 0 1.6rem; border: 1px solid currentColor; border-radius: 999px;
+    font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500;
+    overflow: hidden; isolation: isolate; transition: color 0.5s var(--ease-out);
+  }
+  .btn::before {
+    content: ''; position: absolute; inset: 0; z-index: -1; background: currentColor;
+    transform: translateY(101%); border-radius: inherit; transition: transform 0.6s var(--ease-out);
+  }
+  .btn > * { position: relative; }
+  .btn-light { color: var(--c-paper); }
+  .btn-light:hover, .btn-light:focus-visible { color: var(--c-ink); }
+  .btn-dark { color: var(--c-ink); }
+  .btn-dark:hover, .btn-dark:focus-visible { color: var(--c-paper); }
+  .btn:hover::before, .btn:focus-visible::before { transform: translateY(0); }
+  .btn-solid { background: var(--c-paper); color: var(--c-ink); border-color: var(--c-paper); }
+  .btn-solid::before { background: var(--c-sand); }
+  .btn-solid:hover, .btn-solid:focus-visible { color: var(--c-ink); }
+
+  .demo-tag {
+    display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.625rem; letter-spacing: 0.16em;
+    text-transform: uppercase; font-weight: 600; padding: 0.3rem 0.6rem; border: 1px solid currentColor; opacity: 0.8;
+  }
+
+  .img-frame { position: relative; overflow: hidden; background: #cfc9bd; }
+  .img-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .field { display: grid; gap: 0.5rem; }
+  .field label { font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; opacity: 0.8; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: transparent; border: 0; border-bottom: 1px solid rgba(247, 246, 242, 0.3);
+    color: inherit; font: inherit; font-size: 1.05rem; padding: 0.6rem 0; border-radius: 0; outline: none;
+    transition: border-color 0.3s;
+  }
+  .field select option { color: var(--c-ink); }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { border-bottom-color: var(--c-paper); outline: 1px solid rgba(247,246,242,.5); outline-offset: 4px; }
+  .field [aria-invalid='true'] { border-bottom-color: #e3a28f; }
+  .field .err { color: #f0b6a6; font-size: 0.8125rem; }
+}
+
+/* cursor personalizado: só em ponteiros finos */
+html.has-cursor, html.has-cursor * { cursor: none !important; }
+html.has-cursor input, html.has-cursor textarea, html.has-cursor select { cursor: text !important; }
+
+/* sem JavaScript ou com movimento reduzido: tudo visível */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+.sr-only-focusable:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@keyframes scroll-cue { 0% { transform: scaleY(0); transform-origin: top; } 45% { transform: scaleY(1); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.scroll-cue { animation: scroll-cue 2.4s var(--ease-nord) infinite; }

@@ -1,0 +1,32 @@
+const { chromium, devices } = require('playwright');
+const S = './test-output/shots/';
+(async () => {
+  const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const logs = [];
+  const c = await b.newContext({ ...devices['iPhone 13'] }); const p = await c.newPage();
+  p.on('console', m => { if (['error', 'warning'].includes(m.type())) logs.push(m.text().slice(0, 200)); });
+  await p.goto('http://localhost:4173/'); await p.waitForTimeout(3500);
+  await p.evaluate(() => { const t = document.querySelector('#experiencia > div.relative'); window.scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * 0.5); }); await p.waitForTimeout(5000);
+  await p.screenshot({ path: S + 'q1-m3d.jpg', quality: 60 });
+  await p.evaluate(() => document.getElementById('depoimentos').scrollIntoView()); await p.waitForTimeout(1500);
+  await p.screenshot({ path: S + 'q2-mquote.jpg', quality: 60 });
+  await p.evaluate(() => document.querySelector('footer').scrollIntoView()); await p.waitForTimeout(1500);
+  await p.screenshot({ path: S + 'q3-mfooter.jpg', quality: 60 });
+  const c2 = await b.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' }); const r = await c2.newPage();
+  r.on('console', m => { if (['error', 'warning'].includes(m.type())) logs.push('R ' + m.text().slice(0, 200)); });
+  await r.goto('http://localhost:4173/'); await r.waitForTimeout(2000);
+  await r.evaluate(() => document.getElementById('projetos').scrollIntoView()); await r.waitForTimeout(800);
+  const sc = await r.evaluate(() => { const el = document.querySelector('[data-pin]'); return [el.scrollWidth, el.clientWidth, getComputedStyle(el).overflowX]; });
+  console.log('reduced gallery scroll', sc);
+  await r.screenshot({ path: S + 'q4-reduced-proj.jpg', quality: 60 });
+  await r.evaluate(() => document.getElementById('experiencia').scrollIntoView()); await r.waitForTimeout(1200);
+  await r.screenshot({ path: S + 'q5-reduced-3d.jpg', quality: 60 });
+  // keyboard focus in pinned gallery
+  const c3 = await b.newContext({ viewport: { width: 1440, height: 900 } }); const k = await c3.newPage();
+  await k.goto('http://localhost:4173/'); await k.waitForTimeout(3500);
+  await k.focus('button[aria-label="Explorar projeto Essenza Studio"]'); await k.waitForTimeout(1500);
+  const vis = await k.evaluate(() => { const r = document.querySelector('button[aria-label="Explorar projeto Essenza Studio"]').getBoundingClientRect(); return [Math.round(r.left), Math.round(r.right), innerWidth]; });
+  console.log('focused card rect', vis);
+  console.log(logs.join('\n') || 'no console errors/warnings');
+  await b.close();
+})();
